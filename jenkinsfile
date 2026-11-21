@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_TAG = 'v2'
+        IMAGE_TAG = 'v3'
         IMAGE_NAME = 'vipin0102/nginx-swarm'
         SERVICE_NAME = 'nginx-stack_nginx'
     }
@@ -46,13 +46,18 @@ pipeline {
         stage('Docker image pull & deploy') {
             steps {
                 echo 'Deployment application'
+                sshagent(credentials: ['ec2-ssh-key']) {
 
                 sh '''
+                    echo "$dockerpassword" | docker login -u "$dockerbuild" --password-stdin
+
                     docker pull ${IMAGE_NAME}:${IMAGE_TAG}
 
-                    docker service update --force --image ${IMAGE_NAME}:${IMAGE_TAG} ${SERVICE_NAME}
                 '''
+//                sh 'docker service update --force --image ${IMAGE_NAME}:${IMAGE_TAG} ${SERVICE_NAME}'
+                sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@${INFRD_SERVER_IP} "docker run --name web -itd -p 7777:80 ${IMAGE_NAME}:${IMAGE_TAG}"'
             }
         }
     }
+}
 }
