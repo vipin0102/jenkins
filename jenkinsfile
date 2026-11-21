@@ -52,7 +52,7 @@ pipeline {
                         passwordVariable: 'dockerpassword',
                         usernameVariable: 'dockerbuild'
                     )
-                ])
+                ]){
                 sshagent(credentials: ['ec2-ssh-key']) {
 
                 sh '''
@@ -66,5 +66,6 @@ pipeline {
             }
         }
     }
+}
 }
 }
