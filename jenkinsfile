@@ -46,6 +46,12 @@ pipeline {
         stage('Docker image pull & deploy') {
             steps {
                 echo 'Deployment application'
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'vipin',
+                        passwordVariable: 'dockerpassword',
+                        usernameVariable: 'dockerbuild'
+                    )
                 sshagent(credentials: ['ec2-ssh-key']) {
 
                 sh '''
