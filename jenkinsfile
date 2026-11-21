@@ -51,6 +51,10 @@ pipeline {
                         credentialsId: 'vipin',
                         passwordVariable: 'dockerpassword',
                         usernameVariable: 'dockerbuild'
+                    ),
+                    string(
+                        credentialsId: 'INFRD_SERVER_IP',
+                        variable: 'INFRD_SERVER_IP'
                     )
                 ]){
                 sshagent(credentials: ['ec2-ssh-key']) {
