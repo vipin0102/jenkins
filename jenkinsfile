@@ -67,7 +67,7 @@ pipeline {
 //                '''
 //                sh 'docker service update --force --image ${IMAGE_NAME}:${IMAGE_TAG} ${SERVICE_NAME}'
 //                sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker run --name web -itd -p 7777:80 ${IMAGE_NAME}:${IMAGE_TAG}"'
-//                  sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker service ls"'
+                  sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker service ls"'
                   sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker --version"'
             }
         }
