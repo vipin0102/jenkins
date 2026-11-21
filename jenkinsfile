@@ -4,33 +4,32 @@ pipeline {
         IMAGE_TAG = 'vipin0102/python-test:latest'
         PORT_NUMBER = '7777:80'
     }
-
     stages {
         stage('Git repo') {
             steps {
                 echo 'Git repo added'
                 git branch: 'main', changelog: false, poll: false, url: 'https://github.com/vipin0102/jenkins'
             }
+          } 
         }
-        stage('Docker build & Credentials') {
-            steps {
-                echo 'Docker build with credentials'
-                withCredentials([usernamePassword(credentialsId: 'vipin', passwordVariable: 'dockerpassword', usernameVariable: 'dockerbuild')]) {
-                sh ''' echo "$dockerpassword" | docker login -u "$dockerpassword" --password-stdin
-                       docker build --no-cache -t ${IMAGE_TAG} .
-                       docker push ${IMAGE_TAG}
-                    '''   
+    stage('Docker build & Credentials') {
+        steps {
+            echo 'Docker build with credentials'
+            withCredentials([usernamePassword(credentialsId: 'vipin', passwordVariable: 'dockerpassword', usernameVariable: 'dockerbuild')]) {
+            sh ''' echo "$dockerpassword" | docker login -u "$dockerpassword" --password-stdin
+                   docker build --no-cache -t ${IMAGE_TAG} .
+                   docker push ${IMAGE_TAG}
+                '''   
              }
+          }
                 
-            }
-        stage('Docker image pull & deploy') {
-            steps {
-                echo 'Deployment application'
-                sh ''' docker pull ${IMAGE_TAG}
-                       docker run --name web -itd -p ${PORT_NUMBER} ${IMAGE_TAG}
-                    '''   
+        }
+    stage('Docker image pull & deploy') {
+        steps {
+            echo 'Deployment application'
+            sh ''' docker pull ${IMAGE_TAG}
+                   docker run --name web -itd -p ${PORT_NUMBER} ${IMAGE_TAG}
+                '''   
             }
         }            
-        }        
-    }
-}   
+   }        
