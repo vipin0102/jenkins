@@ -33,6 +33,12 @@ pipeline {
                echo 'Deploying application.....'
                sh 'docker run --name nginx -itd vipin0102/nginx:latest'
             }
-        }        
+        }
+        stage('Clean WORKDIR') {
+            steps {
+               echo 'Cleaning workdirectory.....'
+               cleanWs()
+            }
+        }                
     }
 }
