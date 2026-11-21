@@ -7,20 +7,32 @@ pipeline {
         //        git 'https://github.com/vipin0102/jenkins.git'
         //    }
         //}
-        stage('Build') {
+        stage('Docker Login') {
             steps {
-               echo 'Building Image .....'
+               echo 'Docker login'
+               sh '''
+                        echo "Attentive@123" | docker login \
+                        -u "vipin0102" --password-stdin
+                    '''
             }
         }
-        stage('Test') {
+        stage('Build Image') {
             steps {
-               echo 'Testing Image.....'
+               echo 'Building Image.....'
+               sh 'docker build --no-cache -t vipin0102/nginx:latest .'
+            }
+        }
+        stage('Docker push') {
+            steps {
+               echo 'Docker push Image.....'
+               sh 'docker push vipin0102/nginx:latest'
             }
         }
         stage('Deploy') {
             steps {
-               echo 'Deploying Image.....'
+               echo 'Deploying application.....'
+               sh 'docker run --name nginx -itd vipin0102/nginx:latest'
             }
-        }
+        }        
     }
 }
