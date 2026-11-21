@@ -1,21 +1,21 @@
 pipeline {
     agent any
     stages {
-        stage('Git Checkout') {
-            steps {
-                echo 'Checking out Git repository'
-                git 'https://github.com/vipin0102/jenkins.git'
-            }
-        }
+        //stage('Git Checkout') {
+        //    steps {
+        //        echo 'Checking out Git repository'
+        //        git 'https://github.com/vipin0102/jenkins.git'
+        //    }
+        //}
         stage('Build') {
             steps {
                echo 'Building Image .....'
             }
         }
         stage('Test') {
-            steps (
+            steps {
                echo 'Testing Image.....'
-            )
+            }
         }
         stage('Deploy') {
             steps {
