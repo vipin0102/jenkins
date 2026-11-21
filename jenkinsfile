@@ -31,6 +31,7 @@ pipeline {
         stage('Deploy') {
             steps {
                echo 'Deploying application.....'
+               sh 'docker rm -f nginx'
                sh 'docker run --name nginx -itd vipin0102/nginx:latest'
             }
         }
