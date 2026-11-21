@@ -32,7 +32,7 @@ pipeline {
             steps {
                echo 'Deploying application.....'
                sh 'docker rm -f nginx'
-               sh 'docker run --name nginx -itd vipin0102/nginx:latest'
+               sh 'docker run --name nginx -itd -p 8888:80 vipin0102/nginx:latest'
             }
         }
         stage('Clean WORKDIR') {
