@@ -1,6 +1,12 @@
 pipeline {
     agent any
     stages {
+        stage('Git Checkout') {
+            steps {
+                echo 'Checking out Git repository'
+                git 'https://github.com/vipin0102/jenkins.git'
+            }
+        }
         stage('Build') {
             steps {
                sh "echo 'Building Image .....'"
