@@ -21,7 +21,7 @@ pipeline {
 
                 withCredentials([
                     usernamePassword(
-                        credentialsId: 'vipin',
+                        credentialsId: 'dockercreds',
                         passwordVariable: 'dockerpassword',
                         usernameVariable: 'dockerbuild'
                     )
@@ -46,7 +46,7 @@ pipeline {
 
                 withCredentials([
                     usernamePassword(
-                        credentialsId: 'vipin',
+                        credentialsId: 'dockercreds',
                         passwordVariable: 'dockerpassword',
                         usernameVariable: 'dockerbuild'
                     ),
@@ -86,7 +86,7 @@ pipeline {
 
                 withCredentials([
                     usernamePassword(
-                        credentialsId: 'vipin',
+                        credentialsId: 'dockercreds',
                         passwordVariable: 'dockerpassword',
                         usernameVariable: 'dockerbuild'
                     )
@@ -111,7 +111,7 @@ pipeline {
 
                 withCredentials([
                     usernamePassword(
-                        credentialsId: 'vipin',
+                        credentialsId: 'dockercreds',
                         passwordVariable: 'dockerpassword',
                         usernameVariable: 'dockerbuild'
                     ),
@@ -151,7 +151,7 @@ pipeline {
 
                 withCredentials([
                     usernamePassword(
-                        credentialsId: 'vipin',
+                        credentialsId: 'dockercreds',
                         passwordVariable: 'dockerpassword',
                         usernameVariable: 'dockerbuild'
                     )
