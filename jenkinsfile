@@ -10,20 +10,14 @@ pipeline {
 
     stages {
 
-        stage('Git repo') {
-            steps {
-                echo 'Git repo added'
+        // ================= MAIN BRANCH =================
 
-                git branch: 'main',
-                    changelog: false,
-                    poll: false,
-                    url: 'https://github.com/vipin0102/jenkins'
+        stage('Docker Build & Credentials - MAIN') {
+            when {
+                branch 'main'
             }
-        }
-
-        stage('Docker build & Credentials') {
             steps {
-                echo 'Docker build with credentials'
+                echo 'Docker build with credentials - MAIN'
 
                 withCredentials([
                     usernamePassword(
@@ -43,9 +37,13 @@ pipeline {
             }
         }
 
-        stage('Docker image pull & deploy') {
+        stage('Docker Image Pull & Deploy - MAIN') {
+            when {
+                branch 'main'
+            }
             steps {
-                echo 'Deployment application'
+                echo 'Deployment application - MAIN'
+
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'vipin',
@@ -56,22 +54,155 @@ pipeline {
                         credentialsId: 'INFRD_SERVER_IP',
                         variable: 'INFRD_SERVER_IP'
                     )
-                ]){
-                sshagent(credentials: ['ec2-ssh-key']) {
+                ]) {
+                    sshagent(credentials: ['ec2-ssh-key']) {
 
- //               sh '''
- //                   echo "$dockerpassword" | docker login -u "$dockerbuild" --password-stdin
+                        // sh '''
+                        //     echo "$dockerpassword" | docker login -u "$dockerbuild" --password-stdin
+                        //     docker pull ${IMAGE_NAME}:${IMAGE_TAG}
+                        // '''
 
-//                    docker pull ${IMAGE_NAME}:${IMAGE_TAG}
+                        // sh 'docker service update --force --image ${IMAGE_NAME}:${IMAGE_TAG} ${SERVICE_NAME}'
 
-//                '''
-//                sh 'docker service update --force --image ${IMAGE_NAME}:${IMAGE_TAG} ${SERVICE_NAME}'
-//                sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker run --name web -itd -p 7777:80 ${IMAGE_NAME}:${IMAGE_TAG}"'
-                  sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker service ls"'
-                  sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker --version"'
+                        // sh 'ssh ubuntu@$INFRD_SERVER_IP "docker run --name web -itd -p 7777:80 ${IMAGE_NAME}:${IMAGE_TAG}"'
+
+                        sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker service ls"'
+
+                        sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker --version"'
+                    }
+                }
             }
         }
+
+
+        // ================= DEV BRANCH =================
+
+        stage('Docker Build & Credentials - DEV') {
+            when {
+                branch 'dev'
+            }
+            steps {
+                echo 'Docker build with credentials - DEV'
+
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'vipin',
+                        passwordVariable: 'dockerpassword',
+                        usernameVariable: 'dockerbuild'
+                    )
+                ]) {
+                    sh '''
+                        echo "$dockerpassword" | docker login -u "$dockerbuild" --password-stdin
+
+                        docker build --no-cache -t ${IMAGE_NAME}:${IMAGE_TAG} .
+
+                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                    '''
+                }
+            }
+        }
+
+        stage('Docker Image Pull & Deploy - DEV') {
+            when {
+                branch 'dev'
+            }
+            steps {
+                echo 'Deployment application - DEV'
+
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'vipin',
+                        passwordVariable: 'dockerpassword',
+                        usernameVariable: 'dockerbuild'
+                    ),
+                    string(
+                        credentialsId: 'INFRD_SERVER_IP',
+                        variable: 'INFRD_SERVER_IP'
+                    )
+                ]) {
+                    sshagent(credentials: ['ec2-ssh-key']) {
+
+                        // sh '''
+                        //     echo "$dockerpassword" | docker login -u "$dockerbuild" --password-stdin
+                        //     docker pull ${IMAGE_NAME}:${IMAGE_TAG}
+                        // '''
+
+                        // sh 'docker service update --force --image ${IMAGE_NAME}:${IMAGE_TAG} ${SERVICE_NAME}'
+
+                        // sh 'ssh ubuntu@$INFRD_SERVER_IP "docker run --name web -itd -p 7777:80 ${IMAGE_NAME}:${IMAGE_TAG}"'
+
+                        sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker service ls"'
+
+                        sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker --version"'
+                    }
+                }
+            }
+        }
+
+
+        // ================= UAT BRANCH =================
+
+        stage('Docker Build & Credentials - UAT') {
+            when {
+                branch 'uat'
+            }
+            steps {
+                echo 'Docker build with credentials - UAT'
+
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'vipin',
+                        passwordVariable: 'dockerpassword',
+                        usernameVariable: 'dockerbuild'
+                    )
+                ]) {
+                    sh '''
+                        echo "$dockerpassword" | docker login -u "$dockerbuild" --password-stdin
+
+                        docker build --no-cache -t ${IMAGE_NAME}:${IMAGE_TAG} .
+
+                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                    '''
+                }
+            }
+        }
+
+        stage('Docker Image Pull & Deploy - UAT') {
+            when {
+                branch 'uat'
+            }
+            steps {
+                echo 'Deployment application - UAT'
+
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'vipin',
+                        passwordVariable: 'dockerpassword',
+                        usernameVariable: 'dockerbuild'
+                    ),
+                    string(
+                        credentialsId: 'INFRD_SERVER_IP',
+                        variable: 'INFRD_SERVER_IP'
+                    )
+                ]) {
+                    sshagent(credentials: ['ec2-ssh-key']) {
+
+                        // sh '''
+                        //     echo "$dockerpassword" | docker login -u "$dockerbuild" --password-stdin
+                        //     docker pull ${IMAGE_NAME}:${IMAGE_TAG}
+                        // '''
+
+                        // sh 'docker service update --force --image ${IMAGE_NAME}:${IMAGE_TAG} ${SERVICE_NAME}'
+
+                        // sh 'ssh ubuntu@$INFRD_SERVER_IP "docker run --name web -itd -p 7777:80 ${IMAGE_NAME}:${IMAGE_TAG}"'
+
+                        sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker service ls"'
+
+                        sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker --version"'
+                    }
+                }
+            }
+        }
+
     }
-}
-}
 }
