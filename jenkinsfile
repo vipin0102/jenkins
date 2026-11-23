@@ -9,12 +9,15 @@ pipeline {
     }
 
     stages {
-        stage('Docker build & Credentials') {
+
+        // ================= MAIN BRANCH =================
+
+        stage('Docker Build & Credentials - MAIN') {
             when {
-               branch 'main'
-                  }
+                branch 'main'
+            }
             steps {
-                echo 'Docker build with credentials'
+                echo 'Docker build with credentials - MAIN'
 
                 withCredentials([
                     usernamePassword(
@@ -33,12 +36,14 @@ pipeline {
                 }
             }
         }
-        stage('Docker image pull & deploy') {
+
+        stage('Docker Image Pull & Deploy - MAIN') {
             when {
-               branch 'main'
-                  }            
+                branch 'main'
+            }
             steps {
-                echo 'Deployment application'
+                echo 'Deployment application - MAIN'
+
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'vipin',
@@ -49,30 +54,35 @@ pipeline {
                         credentialsId: 'INFRD_SERVER_IP',
                         variable: 'INFRD_SERVER_IP'
                     )
-                ]){
-                sshagent(credentials: ['ec2-ssh-key']) {
+                ]) {
+                    sshagent(credentials: ['ec2-ssh-key']) {
 
- //               sh '''
- //                   echo "$dockerpassword" | docker login -u "$dockerbuild" --password-stdin
+                        // sh '''
+                        //     echo "$dockerpassword" | docker login -u "$dockerbuild" --password-stdin
+                        //     docker pull ${IMAGE_NAME}:${IMAGE_TAG}
+                        // '''
 
-//                    docker pull ${IMAGE_NAME}:${IMAGE_TAG}
+                        // sh 'docker service update --force --image ${IMAGE_NAME}:${IMAGE_TAG} ${SERVICE_NAME}'
 
-//                '''
-//                sh 'docker service update --force --image ${IMAGE_NAME}:${IMAGE_TAG} ${SERVICE_NAME}'
-//                sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker run --name web -itd -p 7777:80 ${IMAGE_NAME}:${IMAGE_TAG}"'
-                  sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker service ls"'
-                  sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker --version"'
+                        // sh 'ssh ubuntu@$INFRD_SERVER_IP "docker run --name web -itd -p 7777:80 ${IMAGE_NAME}:${IMAGE_TAG}"'
+
+                        sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker service ls"'
+
+                        sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker --version"'
+                    }
+                }
             }
         }
-    }
-}
-    stages {
-        stage('Docker build & Credentials') {
+
+
+        // ================= DEV BRANCH =================
+
+        stage('Docker Build & Credentials - DEV') {
             when {
-               branch 'dev'
-                  }
+                branch 'dev'
+            }
             steps {
-                echo 'Docker build with credentials'
+                echo 'Docker build with credentials - DEV'
 
                 withCredentials([
                     usernamePassword(
@@ -91,12 +101,14 @@ pipeline {
                 }
             }
         }
-        stage('Docker image pull & deploy') {
+
+        stage('Docker Image Pull & Deploy - DEV') {
             when {
-               branch 'dev'
-                  }            
+                branch 'dev'
+            }
             steps {
-                echo 'Deployment application'
+                echo 'Deployment application - DEV'
+
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'vipin',
@@ -107,30 +119,35 @@ pipeline {
                         credentialsId: 'INFRD_SERVER_IP',
                         variable: 'INFRD_SERVER_IP'
                     )
-                ]){
-                sshagent(credentials: ['ec2-ssh-key']) {
+                ]) {
+                    sshagent(credentials: ['ec2-ssh-key']) {
 
- //               sh '''
- //                   echo "$dockerpassword" | docker login -u "$dockerbuild" --password-stdin
+                        // sh '''
+                        //     echo "$dockerpassword" | docker login -u "$dockerbuild" --password-stdin
+                        //     docker pull ${IMAGE_NAME}:${IMAGE_TAG}
+                        // '''
 
-//                    docker pull ${IMAGE_NAME}:${IMAGE_TAG}
+                        // sh 'docker service update --force --image ${IMAGE_NAME}:${IMAGE_TAG} ${SERVICE_NAME}'
 
-//                '''
-//                sh 'docker service update --force --image ${IMAGE_NAME}:${IMAGE_TAG} ${SERVICE_NAME}'
-//                sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker run --name web -itd -p 7777:80 ${IMAGE_NAME}:${IMAGE_TAG}"'
-                  sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker service ls"'
-                  sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker --version"'
+                        // sh 'ssh ubuntu@$INFRD_SERVER_IP "docker run --name web -itd -p 7777:80 ${IMAGE_NAME}:${IMAGE_TAG}"'
+
+                        sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker service ls"'
+
+                        sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker --version"'
+                    }
+                }
             }
         }
-    }
-}
-    stages {
-        stage('Docker build & Credentials') {
+
+
+        // ================= UAT BRANCH =================
+
+        stage('Docker Build & Credentials - UAT') {
             when {
-               branch 'uat'
-                  }
+                branch 'uat'
+            }
             steps {
-                echo 'Docker build with credentials'
+                echo 'Docker build with credentials - UAT'
 
                 withCredentials([
                     usernamePassword(
@@ -149,12 +166,14 @@ pipeline {
                 }
             }
         }
-        stage('Docker image pull & deploy') {
+
+        stage('Docker Image Pull & Deploy - UAT') {
             when {
-               branch 'uat'
-                  }            
+                branch 'uat'
+            }
             steps {
-                echo 'Deployment application'
+                echo 'Deployment application - UAT'
+
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'vipin',
@@ -165,22 +184,25 @@ pipeline {
                         credentialsId: 'INFRD_SERVER_IP',
                         variable: 'INFRD_SERVER_IP'
                     )
-                ]){
-                sshagent(credentials: ['ec2-ssh-key']) {
+                ]) {
+                    sshagent(credentials: ['ec2-ssh-key']) {
 
- //               sh '''
- //                   echo "$dockerpassword" | docker login -u "$dockerbuild" --password-stdin
+                        // sh '''
+                        //     echo "$dockerpassword" | docker login -u "$dockerbuild" --password-stdin
+                        //     docker pull ${IMAGE_NAME}:${IMAGE_TAG}
+                        // '''
 
-//                    docker pull ${IMAGE_NAME}:${IMAGE_TAG}
+                        // sh 'docker service update --force --image ${IMAGE_NAME}:${IMAGE_TAG} ${SERVICE_NAME}'
 
-//                '''
-//                sh 'docker service update --force --image ${IMAGE_NAME}:${IMAGE_TAG} ${SERVICE_NAME}'
-//                sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker run --name web -itd -p 7777:80 ${IMAGE_NAME}:${IMAGE_TAG}"'
-                  sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker service ls"'
-                  sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker --version"'
+                        // sh 'ssh ubuntu@$INFRD_SERVER_IP "docker run --name web -itd -p 7777:80 ${IMAGE_NAME}:${IMAGE_TAG}"'
+
+                        sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker service ls"'
+
+                        sh 'ssh -o StrictHostKeyChecking=accept-new ubuntu@$INFRD_SERVER_IP "docker --version"'
+                    }
+                }
             }
         }
+
     }
-}
-}
 }
